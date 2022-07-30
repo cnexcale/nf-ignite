@@ -309,15 +309,18 @@ interface Protocol {
          */
         TaskId taskId
 
+        String taskName
+
         TaskStart(IgBaseTask task) {
             this.taskId = task.taskId
+            this.taskName = task.taskName
         }
 
         protected TaskStart() {}
 
         @Override
         String toString() {
-            "taskId=$taskId"
+            "id=$taskId; name=$taskName"
         }
     }
 
