@@ -28,7 +28,8 @@ class IgScriptStagingStrategyTest extends Specification {
         given:
         def PATH = Paths.get('/any/path')
         def delegate = new SimpleFileCopyStrategy()
-        def strategy = new IgScriptStagingStrategy(delegate: delegate)
+        def strategy = new IgScriptStagingStrategy(null, null, null)
+        strategy.delegate = delegate
 
         expect:
         strategy.getBeforeStartScript() == null

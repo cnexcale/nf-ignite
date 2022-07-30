@@ -16,6 +16,8 @@
 
 package nextflow.executor
 
+import nextflow.processor.TaskBean
+
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -35,6 +37,10 @@ class IgScriptStagingStrategy extends IgFileStagingStrategy implements ScriptFil
 
     @Delegate(interfaces=false)
     SimpleFileCopyStrategy delegate
+
+    IgScriptStagingStrategy(TaskBean task, UUID sessionId, Map config) {
+        super(task, sessionId, config)
+    }
 
     /**
      * {@inheritDoc}

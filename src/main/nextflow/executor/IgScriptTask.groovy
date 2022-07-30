@@ -52,7 +52,7 @@ class IgScriptTask extends IgBaseTask<Integer>   {
         if( isRemoteWorkDir ) {
             // when work dir is allocated on a `remote` file system path
             // the input files need to be copied locally using a staging strategy
-            stageStrategy = new IgScriptStagingStrategy(task: bean.clone(), sessionId: sessionId)
+            stageStrategy = new IgScriptStagingStrategy( bean.clone(), sessionId, sessionConfig )
             stageStrategy.stage()
             // note: set staging local dir as task work dir
             localWorkDir = stageStrategy.localWorkDir

@@ -60,7 +60,7 @@ class IgClosureTask extends IgBaseTask<IgResultData> {
     }
 
     void beforeExecute() {
-        stagingStrategy = new IgFileStagingStrategy( task: bean, sessionId: sessionId )
+        stagingStrategy = new IgFileStagingStrategy( bean, sessionId, sessionConfig )
         stagingStrategy.stage()
     }
 
