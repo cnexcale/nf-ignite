@@ -15,6 +15,7 @@
  */
 package nextflow.executor
 
+import nextflow.Global
 import nextflow.config.ConfigMap
 
 import java.nio.channels.ClosedByInterruptException
@@ -120,6 +121,15 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     @Override
     final T call() throws Exception {
         try {
+
+            /**
+             * Set sessionConfig to make AWS/S3FS config and credentials
+             * available before creating S3FileSystem during deserialize()
+             */
+            if ( sessionConfig != null ) {
+                Global.setConfig(sessionConfig)
+            }
+
             deserialize()
 
             /*
