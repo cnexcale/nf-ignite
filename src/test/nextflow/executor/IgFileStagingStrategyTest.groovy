@@ -32,7 +32,7 @@ class IgFileStagingStrategyTest extends Specification {
         def targetDir = Files.createTempDirectory('target')
         def scratchDir = Files.createTempDirectory('source')
 
-        def strategy = [:] as IgFileStagingStrategy
+        def strategy = new IgFileStagingStrategy(null ,null, null)
         scratchDir.resolve('file1').text = 'file 1'
         scratchDir.resolve('file_x_1').text = 'x 1'
         scratchDir.resolve('file_x_2').text = 'x 2'
@@ -94,7 +94,7 @@ class IgFileStagingStrategyTest extends Specification {
                 )
 
         when:
-        def ggTask = new IgFileStagingStrategy(sessionId: sessionId, task: task)
+        def ggTask = new IgFileStagingStrategy( task, sessionId, null)
         then:
         ggTask.sessionId == sessionId
 

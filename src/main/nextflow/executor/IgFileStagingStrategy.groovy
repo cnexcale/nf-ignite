@@ -23,6 +23,9 @@ import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 import nextflow.file.FileHelper
 import nextflow.processor.TaskBean
+
+import java.nio.file.Paths
+
 /**
  * Implements file staging strategy for a Ignite task.
  *
@@ -48,28 +51,43 @@ class IgFileStagingStrategy implements StagingStrategy {
      * thus it do not need to be transported
      *
      */
-    protected Path localWorkDir
+    private Path _localWorkDir
+
+    protected Path getLocalWorkDir() { _localWorkDir }
+
+    /**
+     *
+     */
+    protected Path localStorageRoot
+
 
     /**
      * A temporary where all files are cached. The folder is deleted during instance shut-down
      */
     private static final Path _localCacheDir = FileHelper.createLocalDir()
 
-    static {
-        Runtime.getRuntime().addShutdownHook { _localCacheDir.deleteDir() }
+    Path getLocalCacheDir() { resolveLocalCacheDir(_localCacheDir, localStorageRoot) }
+
+
+    IgFileStagingStrategy( TaskBean task, UUID sessionId, Map config ) {
+        this.task = task
+        this.sessionId = sessionId
+        this.localStorageRoot = getLocalStorageRoot(config)
+        localCacheDir.deleteOnExit()
+        _localWorkDir = createLocalDir(localStorageRoot)
     }
 
-    Path getLocalCacheDir() { _localCacheDir }
-
     /**
-     * Copies to the task input files to the execution folder, that is {@link #localWorkDir}
+     * Copies to the task input files to the execution folder, that is {@link #_localWorkDir}
      * folder created when this method is invoked
      */
     @Override
     void stage() {
 
-        // create a local scratch dir
-        localWorkDir = FileHelper.createLocalDir()
+        // create a local work dir
+        _localWorkDir = createLocalDir(localStorageRoot)
+
+        log?.debug "Task ${task.name} > using workdDir ${_localWorkDir} and cache dir ${localCacheDir?.toString()}"
 
         if( !task.inputFiles )
             return
@@ -121,7 +139,7 @@ class IgFileStagingStrategy implements StagingStrategy {
      * Copy the file with the specified name from the task execution folder
      * to the {@code targetDir}
      *
-     * @param filePattern A file name relative to the {@link #localWorkDir}.
+     * @param filePattern A file name relative to the {@link #_localWorkDir}.
      *        It can contain globs wildcards
      */
     @PackageScope
@@ -136,4 +154,25 @@ class IgFileStagingStrategy implements StagingStrategy {
         }
     }
 
+    private static Path getLocalStorageRoot(Map config) {
+        def localStorageRoot = (String) ((Map)config?.get("cluster"))?.get("localStorageRoot")
+        return localStorageRoot
+                ? Paths.get(localStorageRoot)
+                : null
+    }
+
+    private static Path createLocalDir(Path basePath) {
+        return basePath
+                ? FileHelper.createTempFolder(basePath)
+                : FileHelper.createLocalDir()
+    }
+
+    private static Path resolveLocalCacheDir(Path localCacheDir, Path localStorageRoot) {
+        if ( !localStorageRoot )
+            localCacheDir
+        else{
+            def localCacheStr = localCacheDir.toAbsolutePath().toString()
+            Paths.get(localStorageRoot.toString(), "cache", localCacheStr[1..localCacheStr.length() - 1])
+        }
+    }
 }
