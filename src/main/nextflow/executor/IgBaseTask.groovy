@@ -57,6 +57,8 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
      */
     private TaskId taskId
 
+    private String taskName
+
     /**
      * Holds the class attributes in this map. Note: is defined as 'transient' because
      * the map content is serialized as a byte[] and saved to the {@code payload} field
@@ -72,6 +74,7 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     protected IgBaseTask( TaskRun task, UUID sessionId ) {
         this.sessionId = sessionId
         this.taskId = task.id
+        this.taskName = task.name
         this.bean = new TaskBean(task)
         this.payload = KryoHelper.serialize(bean)
         this.resources = new TaskResources(task)
@@ -159,6 +162,8 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     protected abstract T execute0()
 
     TaskId getTaskId() { taskId }
+
+    String getTaskName() { taskName }
 
     @Override
     boolean equals( Object obj ) {
