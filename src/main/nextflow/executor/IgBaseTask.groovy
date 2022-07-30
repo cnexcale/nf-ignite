@@ -15,6 +15,8 @@
  */
 package nextflow.executor
 
+import nextflow.config.ConfigMap
+
 import java.nio.channels.ClosedByInterruptException
 
 import groovy.transform.CompileStatic
@@ -64,6 +66,11 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     protected transient TaskBean bean
 
     /**
+     * Provides access to sections of the Session config associated with the TaskRun object
+     */
+    protected Map sessionConfig;
+
+    /**
      * Initialize the grid gain task wrapper
      *
      * @param task The task instance to be executed
@@ -75,6 +82,7 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
         this.bean = new TaskBean(task)
         this.payload = KryoHelper.serialize(bean)
         this.resources = new TaskResources(task)
+        this.sessionConfig = getRelevantConfigSections(task.processor.session.config)
     }
 
     /** ONLY FOR TESTING PURPOSE */
@@ -177,4 +185,12 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
         "${getClass().simpleName}[taskId=${taskId}]"
     }
 
+    private ConfigMap getRelevantConfigSections(Map sessionConfig) {
+        def configPart = new ConfigMap()
+        def relevantConfigKeys = ["aws", "plugins", "cluster"]
+        for (configKey in relevantConfigKeys) {
+            configPart.put(configKey, sessionConfig.get(configKey))
+        }
+        configPart
+    }
 }
