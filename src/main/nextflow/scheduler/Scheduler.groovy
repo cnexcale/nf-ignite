@@ -354,7 +354,7 @@ class Scheduler {
 
         def holder = scheduledTasks.get(message.taskId)
         if( holder ) {
-            log.trace "+++ Task started: $message [${hostName(sender)}] $sender"
+            log.debug "+++ Task started: $message [${hostName(sender)}] $sender"
             holder.withStart(sender)
             // -- reset the idle attribute, if any
             def node = workerNodes.get(sender)
@@ -379,7 +379,7 @@ class Scheduler {
 
         def holder = scheduledTasks.get(message.taskId)
         if( holder ) {
-            log.trace "+++ Task complete: $message [${hostName(sender)}] $sender"
+            log.debug "+++ Task complete: $message [${hostName(sender)}] $sender"
             completedTasks.put(message.taskId, holder.withComplete(message))
             scheduledTasks.remove(message.taskId)
             // -- notify that a task has completed
