@@ -91,12 +91,17 @@ class IgConnector {
         final clusterConfig = new ClusterConfig(session.config.cluster as Map, Const.ROLE_MASTER, System.getenv())
         boolean shutdownCluster = clusterConfig.getAttribute('shutdownOnComplete', false) as boolean
         log.debug "Cluster shutdownOnComplete: $shutdownCluster"
-        monitor.session.onShutdown {
-            allSessions.remove(session.uniqueId)
-            shutdown(shutdownCluster)
-            // close the current instance
-            grid.close()
-        }
+
+        monitor.session.onShutdown(
+            new Runnable() {
+                @Override void run() {
+                    allSessions.remove(session.uniqueId)
+                    shutdown(shutdownCluster)
+                    // close the current instance
+                    grid.close()
+                }
+            }
+        )
 
 
         /*
