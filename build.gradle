@@ -73,7 +73,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly 'io.nextflow:nextflow:21.12.1-edge'
+    compileOnly 'io.nextflow:nextflow:22.08.0-edge'
     compileOnly 'org.slf4j:slf4j-api:1.7.10'
     compileOnly "org.codehaus.groovy:groovy:3.0.9"
     compileOnly "org.codehaus.groovy:groovy-nio:3.0.9"
