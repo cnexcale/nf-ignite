@@ -264,6 +264,7 @@ class SchedulerAgent implements Closeable {
             }
             catch (Throwable e) {
                 fetchErrCount++
+                log.error "=== Error fetching pending tasks: ${e}"
                 throw e
             }
         }
