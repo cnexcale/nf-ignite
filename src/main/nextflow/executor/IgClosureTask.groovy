@@ -52,6 +52,7 @@ class IgClosureTask extends IgBaseTask<IgResultData> {
 
     private transient StagingStrategy stagingStrategy
 
+    IgClosureTask() { }
 
     IgClosureTask( TaskRun task, UUID sessionId ) {
         super(task,sessionId)

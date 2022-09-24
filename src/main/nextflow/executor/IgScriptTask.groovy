@@ -42,6 +42,8 @@ class IgScriptTask extends IgBaseTask<Integer>   {
 
     private transient Path localWorkDir
 
+    IgScriptTask() { }
+
     IgScriptTask( TaskRun task, UUID sessionId ) {
         super(task, sessionId)
     }
