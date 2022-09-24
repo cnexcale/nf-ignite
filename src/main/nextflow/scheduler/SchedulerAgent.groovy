@@ -16,6 +16,10 @@
 
 package nextflow.scheduler
 
+import nextflow.executor.IgClosureTask
+import nextflow.executor.IgScriptTask
+import nextflow.util.KryoHelper
+
 import java.nio.channels.ClosedByInterruptException
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ConcurrentHashMap
@@ -484,6 +488,10 @@ class SchedulerAgent implements Closeable {
         this.taskExecutor = Executors.newFixedThreadPool(SysHelper.getAvailCpus())
         this.total = new Resources(config)
         this.eventProcessor = new AgentProcessor()
+
+        // register classes for Kryo serialization
+        KryoHelper.register(IgScriptTask)
+        KryoHelper.register(IgClosureTask)
 
         // -- register events to listen to
         registerEvents()
