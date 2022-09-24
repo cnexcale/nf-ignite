@@ -18,6 +18,7 @@ package nextflow.scheduler
 
 import nextflow.executor.IgClosureTask
 import nextflow.executor.IgScriptTask
+import nextflow.processor.TaskBean
 import nextflow.util.KryoHelper
 
 import java.nio.channels.ClosedByInterruptException
@@ -492,6 +493,7 @@ class SchedulerAgent implements Closeable {
         // register classes for Kryo serialization
         KryoHelper.register(IgScriptTask)
         KryoHelper.register(IgClosureTask)
+        KryoHelper.register(TaskBean)
 
         // -- register events to listen to
         registerEvents()
