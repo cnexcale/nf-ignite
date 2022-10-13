@@ -73,13 +73,13 @@ configurations {
 }
 
 dependencies {
-    compileOnly 'io.nextflow:nextflow:22.09.5-edge'
+    compileOnly 'io.nextflow:nextflow:22.10'
     compileOnly 'org.slf4j:slf4j-api:1.7.10'
     compileOnly "org.codehaus.groovy:groovy:3.0.9"
     compileOnly "org.codehaus.groovy:groovy-nio:3.0.9"
     compileOnly 'org.pf4j:pf4j:3.4.1'
 
-    launchRuntime 'io.nextflow:nextflow:22.09.5-edge'
+    launchRuntime 'io.nextflow:nextflow:22.10'
     launchRuntime 'org.slf4j:slf4j-api:1.7.10'
     launchRuntime "org.codehaus.groovy:groovy:3.0.9"
     launchRuntime "org.codehaus.groovy:groovy-nio:3.0.9"
@@ -88,7 +88,7 @@ dependencies {
     compile ('org.apache.ignite:ignite-core:2.4.0')
     compile ('org.apache.ignite:ignite-slf4j:2.4.0') { transitive = false }
 
-    testImplementation 'io.nextflow:nextflow:22.09.5-edge'
+    testImplementation 'io.nextflow:nextflow:22.10'
     testImplementation "org.codehaus.groovy:groovy:3.0.9"
     testImplementation "org.codehaus.groovy:groovy-nio:3.0.9"
     testCompile ("org.codehaus.groovy:groovy-test:3.0.9") { exclude group: 'org.codehaus.groovy' }
