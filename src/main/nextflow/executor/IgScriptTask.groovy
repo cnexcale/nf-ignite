@@ -67,6 +67,7 @@ class IgScriptTask extends IgBaseTask<Integer>   {
         if( stageStrategy ) {
             stageStrategy.unstage()
             cleanupLocalWorkDir()
+            cleanupLocalCache()
         }
     }
 
@@ -79,6 +80,16 @@ class IgScriptTask extends IgBaseTask<Integer>   {
         }
         catch (Exception e) {
             log.debug "Error while cleaning-up path: $localWorkDir -- Cause: ${e.message ?: e}"
+        }
+    }
+
+    protected void cleanupLocalCache() {
+        if( bean.cleanup == false ) return
+        try {
+            stageStrategy.cleanupCache()
+        }
+        catch (Exception e){
+            log.debug( "Error while cleaning up local cache -- Cause: ${e.message ?: e}" )
         }
     }
 

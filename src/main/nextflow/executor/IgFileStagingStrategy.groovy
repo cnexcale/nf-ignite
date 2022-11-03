@@ -68,6 +68,7 @@ class IgFileStagingStrategy implements StagingStrategy {
 
     Path getLocalCacheDir() { resolveLocalCacheDir(_localCacheDir, localStorageRoot) }
 
+    protected List<Path> cachedFiles;
 
     IgFileStagingStrategy( TaskBean task, UUID sessionId, Map config ) {
         this.task = task
@@ -75,6 +76,7 @@ class IgFileStagingStrategy implements StagingStrategy {
         this.localStorageRoot = getLocalStorageRoot(config)
         localCacheDir.deleteOnExit()
         _localWorkDir = createLocalDir(localStorageRoot)
+        cachedFiles = []
     }
 
     /**
@@ -97,6 +99,7 @@ class IgFileStagingStrategy implements StagingStrategy {
             final fileName = entry.key
             final source = entry.value
             final cached = FileHelper.getLocalCachePath(source, localCacheDir, sessionId)
+            cachedFiles.add(cached)
             final staged = localWorkDir.resolve(fileName)
             // create any sub-directory before create the symlink
             if( fileName.contains('/') ) {
@@ -134,6 +137,17 @@ class IgFileStagingStrategy implements StagingStrategy {
         }
     }
 
+    void cleanupCache() {
+        if ( cachedFiles.size() <= 0 ) return
+
+        log?.debug( "Cleaning up ${ cachedFiles.size() } files in local cache" )
+        cachedFiles.forEach(it -> {
+            if ( !it.delete() )
+                log?.warn( "Could not delete ${it.toString()} from local cache" )
+        })
+        log?.debug( "Local cache cleanup done" )
+        cachedFiles = []
+    }
 
     /**
      * Copy the file with the specified name from the task execution folder
