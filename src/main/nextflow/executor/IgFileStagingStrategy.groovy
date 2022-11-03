@@ -132,7 +132,7 @@ class IgFileStagingStrategy implements StagingStrategy {
                 copyToTargetDir(name, localWorkDir, task.targetDir)
             }
             catch( IOException e ) {
-                log?.error("Unable to copy result file: $name to target dir", e)
+                log?.error("Unable to copy result file: $name to target dir. Error: ${e?.message}\nStack Trace:\n${e.stackTrace}", e)
             }
         }
     }
