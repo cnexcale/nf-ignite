@@ -77,6 +77,7 @@ class IgScriptStagingStrategy extends IgFileStagingStrategy implements ScriptFil
         copyFromScratchToWorkDir(TaskRun.CMD_LOG, true)
         copyFromScratchToWorkDir(TaskRun.CMD_ENV,
                                  super.task.getOutputEnvNames() == null || super.task.getOutputEnvNames().empty)
+        copyFromScratchToWorkDir(TaskRun.CMD_RUN) // only for debugging purposes
 
     }
 
