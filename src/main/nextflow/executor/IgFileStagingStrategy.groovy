@@ -161,7 +161,7 @@ class IgFileStagingStrategy implements StagingStrategy {
 
         def type = filePattern.contains('**') ? 'file' : 'any'
 
-        FileHelper.visitFiles( from, filePattern, type: type ) { Path it ->
+        FileHelper.visitFiles( from, filePattern, type: type, ignorePermissionError: true  ) { Path it ->
             // note: converts to a *string* other the two paths may belong to two different systems and thus throwing an exception
             final rel = from.relativize(it).toString()
             it.copyTo(to.resolve(rel))
