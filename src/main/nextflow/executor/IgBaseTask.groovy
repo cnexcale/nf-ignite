@@ -72,6 +72,11 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     protected Map sessionConfig;
 
     /**
+     * Config sections that have to be known to the task, taken from main session config
+     */
+    protected static final String[] RELEVANT_CONFIG_KEYS = [ "aws", "plugins", "cluster", "cleanup" ]
+
+    /**
      * Initialize the grid gain task wrapper
      *
      * @param task The task instance to be executed
@@ -195,11 +200,11 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
         "${getClass().simpleName}[taskId=${taskId}]"
     }
 
-    private ConfigMap getRelevantConfigSections(Map sessionConfig) {
+    private static ConfigMap getRelevantConfigSections(Map sessionConfig) {
         def configPart = new ConfigMap()
-        def relevantConfigKeys = ["aws", "plugins", "cluster"]
-        for (configKey in relevantConfigKeys) {
-            configPart.put(configKey, sessionConfig.get(configKey))
+        for (configKey in RELEVANT_CONFIG_KEYS) {
+            if ( sessionConfig.containsKey(configKey) )
+                configPart.put(configKey, sessionConfig.get(configKey))
         }
         configPart
     }
