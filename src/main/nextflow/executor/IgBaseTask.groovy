@@ -15,6 +15,9 @@
  */
 package nextflow.executor
 
+import nextflow.Global
+import nextflow.config.ConfigMap
+
 import java.nio.channels.ClosedByInterruptException
 
 import groovy.transform.CompileStatic
@@ -64,6 +67,16 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     protected transient TaskBean bean
 
     /**
+     * Provides access to sections of the Session config associated with the TaskRun object
+     */
+    protected Map sessionConfig;
+
+    /**
+     * Config sections that have to be known to the task, taken from main session config
+     */
+    protected static final String[] RELEVANT_CONFIG_KEYS = [ "aws", "plugins", "cluster", "cleanup" ]
+
+    /**
      * Initialize the grid gain task wrapper
      *
      * @param task The task instance to be executed
@@ -75,6 +88,7 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
         this.bean = new TaskBean(task)
         this.payload = KryoHelper.serialize(bean)
         this.resources = new TaskResources(task)
+        this.sessionConfig = getRelevantConfigSections(task.processor.session.config)
     }
 
     /** ONLY FOR TESTING PURPOSE */
@@ -112,6 +126,15 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
     @Override
     final T call() throws Exception {
         try {
+
+            /**
+             * Set sessionConfig to make AWS/S3FS config and credentials
+             * available before creating S3FileSystem during deserialize()
+             */
+            if ( sessionConfig != null ) {
+                Global.setConfig(sessionConfig)
+            }
+
             deserialize()
 
             /*
@@ -177,4 +200,12 @@ abstract class IgBaseTask<T> implements IgniteCallable<T>, ComputeJob {
         "${getClass().simpleName}[taskId=${taskId}]"
     }
 
+    private static ConfigMap getRelevantConfigSections(Map sessionConfig) {
+        def configPart = new ConfigMap()
+        for (configKey in RELEVANT_CONFIG_KEYS) {
+            if ( sessionConfig.containsKey(configKey) )
+                configPart.put(configKey, sessionConfig.get(configKey))
+        }
+        configPart
+    }
 }
